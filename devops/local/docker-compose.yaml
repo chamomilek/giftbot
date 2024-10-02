@@ -1,0 +1,27 @@
+version: "3.3"
+
+services:
+  app:
+    build:
+      context: ../../backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app/src
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_NAME=giftbot
+      - DB_USER=root
+      - DB_PASSWORD=${LOCAL_PASSWORD:-pwd}
+
+  mysql:
+    image: mysql:8.0
+    command: --sql_mode=STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+    restart: always
+    ports:
+      - 3307:3306
+    volumes:
+      - ../../devops/local/db:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: ${LOCAL_PASSWORD:-pwd}
+      DB_NAME: giftbot
